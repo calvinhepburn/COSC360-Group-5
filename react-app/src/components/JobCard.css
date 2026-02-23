@@ -1,0 +1,17 @@
+.job-card {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    width: 250px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: 0.2s ease;
+    margin-left: 50px;
+}
+
+
+.job-card:hover {
+  transform: translateY(-4px);
+}
