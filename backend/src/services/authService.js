@@ -1,6 +1,6 @@
 import { clearRefreshTokenHash, createUser, findByEmail, findById, setRefreshTokenHash, } from "../repositories/userRepository.js";
 import { hashRefreshToken, signAccessToken, signRefreshToken, verifyRefreshToken, } from "./sessionService.js";
-import { httpError } from "../utils/httpError.js";
+import { appError } from "../utils/appError.js";
 
 export async function registerUser(payload) {
     const safePayload = payload || {};
@@ -10,16 +10,16 @@ export async function registerUser(payload) {
     const password = typeof rawPassword === "string" ? rawPassword : "";
 
     if (!name || !email || !password) {
-        throw httpError("INVALID_REQUEST", "Name, email, and password are required");
+        throw appError("INVALID_REQUEST", "Name, email, and password are required");
     }
 
     if (role === "admin") {
-        throw httpError("ROLE_NOT_ALLOWED", "Admin role cannot be selected during registration");
+        throw appError("ROLE_NOT_ALLOWED", "Admin role cannot be selected during registration");
     }
 
     const existingUser = await findByEmail(email);
     if (existingUser) {
-        throw httpError("EMAIL_ALREADY_IN_USE", "Email is already registered");
+        throw appError("EMAIL_ALREADY_IN_USE", "Email is already registered");
     }
 
     const user = await createUser({ name, email, password, role, });
@@ -48,17 +48,17 @@ export async function loginUser(payload) {
     const password = typeof rawPassword === "string" ? rawPassword : "";
 
     if (!email || !password) {
-        throw httpError("INVALID_REQUEST", "Email and password are required");
+        throw appError("INVALID_REQUEST", "Email and password are required");
     }
 
     const user = await findByEmail(email, { includePassword: true });
     if (!user) {
-        throw httpError("INVALID_CREDENTIALS", "Invalid email or password");
+        throw appError("INVALID_CREDENTIALS", "Invalid email or password");
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-        throw httpError("INVALID_CREDENTIALS", "Invalid email or password");
+        throw appError("INVALID_CREDENTIALS", "Invalid email or password");
     }
 
     const accessToken = signAccessToken(user.id);
@@ -83,13 +83,13 @@ export async function refreshSession(refreshToken) {
     const user = await findById(decoded.sub, { includeRefreshTokenHash: true });
 
     if (!user || !user.refreshTokenHash) {
-        throw httpError("INVALID_REFRESH_TOKEN", "Refresh token is invalid or expired");
+        throw appError("INVALID_REFRESH_TOKEN", "Refresh token is invalid or expired");
     }
 
     const incomingHash = hashRefreshToken(refreshToken);
     if (user.refreshTokenHash !== incomingHash) {
         await clearRefreshTokenHash(user.id);
-        throw httpError("INVALID_REFRESH_TOKEN", "Refresh token is invalid or expired");
+        throw appError("INVALID_REFRESH_TOKEN", "Refresh token is invalid or expired");
     }
 
     const nextAccessToken = signAccessToken(user.id);
@@ -111,7 +111,7 @@ export async function refreshSession(refreshToken) {
 
 export async function logoutSession(userId) {
     if (!userId) {
-        throw httpError("MISSING_USER_ID", "User id is required");
+        throw appError("MISSING_USER_ID", "User id is required");
     }
 
     await clearRefreshTokenHash(userId);
@@ -120,12 +120,12 @@ export async function logoutSession(userId) {
 
 export async function getCurrentUser(userId) {
     if (!userId) {
-        throw httpError("UNAUTHORIZED", "Not authenticated");
+        throw appError("UNAUTHORIZED", "Not authenticated");
     }
 
     const user = await findById(userId);
     if (!user) {
-        throw httpError("USER_NOT_FOUND", "User not found");
+        throw appError("USER_NOT_FOUND", "User not found");
     }
 
     return {
