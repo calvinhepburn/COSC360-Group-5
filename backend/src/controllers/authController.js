@@ -31,7 +31,10 @@ export const refresh = asyncHandler(async (req, res) => {
 
 export const logout = asyncHandler(async (req, res) => {
     const userId = req.auth && req.auth.userId;
-    clearAuthCookies(res);
-    await logoutSession(userId);
+    try {
+        await logoutSession(userId);
+    } finally {
+        clearAuthCookies(res);
+    }
     return res.status(200).json({ success: true });
 });
