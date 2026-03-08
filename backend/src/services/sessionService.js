@@ -68,11 +68,3 @@ export function hashRefreshToken(refreshToken) {
 
     return crypto.createHash("sha256").update(refreshToken).digest("hex");
 }
-
-export function createSessionTokens(userId) {
-    const accessToken = signAccessToken(userId);
-    const refreshToken = signRefreshToken(userId);
-    const refreshTokenHash = hashRefreshToken(refreshToken);
-
-    return { accessToken, refreshToken, refreshTokenHash };
-}
