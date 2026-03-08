@@ -1,4 +1,4 @@
-export function httpError(statusOrCode, codeOrMessage, messageOrDetails, details) {
+export function appError(statusOrCode, codeOrMessage, messageOrDetails, details) {
     const hasExplicitStatus = typeof statusOrCode === "number";
 
     const status = hasExplicitStatus ? statusOrCode : undefined;

@@ -17,7 +17,7 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const me = asyncHandler(async (req, res) => {
-    const userId = (req.user && req.user.id) || req.userId;
+    const userId = req.auth && req.auth.userId;
     const result = await getCurrentUser(userId);
     return res.status(200).json(result);
 });
@@ -30,8 +30,8 @@ export const refresh = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (req, res) => {
-    const userId = (req.user && req.user.id) || req.userId;
-    await logoutSession(userId);
+    const userId = req.auth && req.auth.userId;
     clearAuthCookies(res);
+    await logoutSession(userId);
     return res.status(200).json({ success: true });
 });
