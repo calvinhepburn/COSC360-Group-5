@@ -10,14 +10,18 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "API is running" });
+});
+
 app.use("/api/auth", authRouter);
 
 app.post("/submit", (req, res) => {
-  const { name, role } = req.body;
+    const { name, role } = req.body;
 
-  res.json({
-    message: `Received ${name} with role ${role}`
-  });
+    res.json({
+        message: `Received ${name} with role ${role}`
+    });
 });
 
 app.use(notFound);
