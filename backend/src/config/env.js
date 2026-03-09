@@ -3,12 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const required = [
-    "PORT",
-    "NODE_ENV",
-    "MONGO_URI",
-    "BCRYPT_SALT_ROUNDS",
-    "JWT_ACCESS_SECRET",
-    "JWT_REFRESH_SECRET",
+
 ]
 
 for (const key of required) {
